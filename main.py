@@ -1,67 +1,87 @@
-# Tic-Tac-Toe game in Python
+import random
 
-board = [" " for x in range(9)]
+# Fungsi untuk menggambar papan permainan
+def draw_board(board):
+    print("-------------")
+    for i in range(3):
+        print("|", end="")
+        for j in range(3):
+            print(" " + board[i][j] + " ", end="|")
+        print("\n-------------")
 
-def print_board():
-    row1 = "| {} | {} | {} |".format(board[0], board[1], board[2])
-    row2 = "| {} | {} | {} |".format(board[3], board[4], board[5])
-    row3 = "| {} | {} | {} |".format(board[6], board[7], board[8])
+# Fungsi untuk memeriksa apakah ada pemenang
+def check_winner(board, player):
+    # Memeriksa baris
+    for i in range(3):
+        if board[i][0] == board[i][1] == board[i][2] == player:
+            return True
 
-    print()
-    print(row1)
-    print(row2)
-    print(row3)
-    print()
+    # Memeriksa kolom
+    for j in range(3):
+        if board[0][j] == board[1][j] == board[2][j] == player:
+            return True
 
-def player_move(icon):
-    if icon == "X":
-        number = 1
-    elif icon == "O":
-        number = 2
-
-    print("Your turn player {}".format(number))
-
-    choice = int(input("Enter your move (1-9): ").strip())
-    if board[choice - 1] == " ":
-        board[choice - 1] = icon
-    else:
-        print()
-        print("That space is taken!")
-
-def is_victory(icon):
-    if (board[0] == icon and board[1] == icon and board[2] == icon) or \
-       (board[3] == icon and board[4] == icon and board[5] == icon) or \
-       (board[6] == icon and board[7] == icon and board[8] == icon) or \
-       (board[0] == icon and board[3] == icon and board[6] == icon) or \
-       (board[1] == icon and board[4] == icon and board[7] == icon) or \
-       (board[2] == icon and board[5] == icon and board[8] == icon) or \
-       (board[0] == icon and board[4] == icon and board[8] == icon) or \
-       (board[2] == icon and board[4] == icon and board[6] == icon):
+    # Memeriksa diagonal
+    if board[0][0] == board[1][1] == board[2][2] == player:
         return True
-    else:
-        return False
 
-def is_draw():
-    if " " not in board:
+    if board[0][2] == board[1][1] == board[2][0] == player:
         return True
-    else:
-        return False
 
-while True:
-    print_board()
-    player_move("X")
-    print_board()
-    if is_victory("X"):
-        print("X wins! Congratulations!")
-        break
-    elif is_draw():
-        print("It's a draw!")
-        break
-    player_move("O")
-    if is_victory("O"):
-        print_board()
-        print("O wins! Congratulations!")
-        break
-    elif is_draw():
-        print("It's a draw!")
-        break
+    return False
+
+# Fungsi untuk mengatur giliran pemain manusia
+def human_turn(board):
+    while True:
+        row = int(input("Masukkan nomor baris (0-2): "))
+        col = int(input("Masukkan nomor kolom (0-2): "))
+
+        if row < 0 or row > 2 or col < 0 or col > 2:
+            print("Input tidak valid. Coba lagi.")
+        elif board[row][col] != " ":
+            print("Sudah ada tanda di posisi tersebut. Coba lagi.")
+        else:
+            board[row][col] = "X"
+            break
+
+# Fungsi untuk mengatur giliran AI
+def ai_turn(board):
+    while True:
+        row = random.randint(0, 2)
+        col = random.randint(0, 2)
+
+        if board[row][col] == " ":
+            board[row][col] = "O"
+            break
+
+# Fungsi utama untuk menjalankan permainan
+def play_game():
+    board = [[" " for _ in range(3)] for _ in range(3)]
+    draw_board(board)
+
+    while True:
+        human_turn(board)
+        draw_board(board)
+
+        if check_winner(board, "X"):
+            print("Anda menang! Selamat!")
+            break
+
+        if " " not in board[0] and " " not in board[1] and " " not in board[2]:
+            print("Permainan berakhir dengan hasil seri.")
+            break
+
+        print("Giliran AI...")
+        ai_turn(board)
+        draw_board(board)
+
+        if check_winner(board, "O"):
+            print("AI menang! Anda kalah.")
+            break
+
+        if " " not in board[0] and " " not in board[1] and " " not in board[2]:
+            print("Permainan berakhir dengan hasil seri.")
+            break
+
+# Memulai permainan
+play_game()
